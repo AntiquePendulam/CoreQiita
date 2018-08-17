@@ -1,3 +1,4 @@
+(開発中)
 A QiitaAPI for C#
 
 QiitaのAPIをC#で扱うためのライブラリです。
