@@ -15,6 +15,10 @@ namespace CoreQiita
 
         internal HttpClient client = new HttpClient() {BaseAddress = new Uri(Url.BASE_URL) };
 
+        /// <summary>
+        /// GetToken
+        /// </summary>
+        /// <param name="token">Access Token</param>
         public Tokens(string token)
         {
             this.Token = token;
@@ -26,6 +30,11 @@ namespace CoreQiita
             };
         }
 
+        /// <summary>
+        /// Delete Token
+        /// Successful:True/ Error:False
+        /// </summary>
+        /// <returns>bool</returns>
         public bool TokenDelete()
         {
             var task = TokenDeleteAsync();
@@ -33,6 +42,11 @@ namespace CoreQiita
             return task.Result;
         }
 
+        /// <summary>
+        /// Delete Token Async
+        /// Successful:True/ Error:False
+        /// </summary>
+        /// <returns>bool</returns>
         public async Task<bool> TokenDeleteAsync()
         {
             var message = await client.DeleteAsync($"{Url.BASE_URL}/api/v2/access_tokens/{Token}");

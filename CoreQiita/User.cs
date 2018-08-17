@@ -13,8 +13,6 @@ namespace CoreQiita
         private string USER_ID { get; set; }
         public AuthUserJson AuthUser { get; private set; }
 
-        public string USER_URL { get; private set; }
-
         private HttpClient _client;
         internal HttpClient Client
         {
@@ -29,24 +27,39 @@ namespace CoreQiita
             }
         }
 
+        #region GetUser by user_id
         /// <summary>
         /// Get User by user_id
         /// </summary>
-        /// <param name="user_id"></param>
-        /// <returns></returns>
+        /// <param name="user_id">User id</param>
+        /// <returns>UserData</returns>
         public UserJson GetUser(string user_id)
         {
-            USER_URL = $"{Url.BASE_USER_URL}users/{user_id}";
-            return GetUser<UserJson>();
+            var async = GetUserAsync(user_id);
+            async.Wait();
+            return async.Result;
         }
 
         /// <summary>
+        /// Get User by user_id
+        /// </summary>
+        /// <param name="user_id">User id</param>
+        /// <returns>UserData</returns>
+        public async Task<UserJson> GetUserAsync(string user_id)
+        {
+            var url = $"{Url.BASE_USER_URL}users/{user_id}";
+            return await GetUserAsync<UserJson>(url);
+        }
+        #endregion
+
+        #region GetAllUsers
+        /// <summary>
         /// Get User by page
         /// </summary>
-        /// <param name="page"></param>
-        /// <param name="per_page"></param>
-        /// <returns></returns>
-        public UserJson[] GetAllUsers(int page, int per_page = 1)
+        /// <param name="page">page number</param>
+        /// <param name="per_page">per page users</param>
+        /// <returns>UsersData(Array)</returns>
+        public UserJson[] GetAllUsers(int page = 1, int per_page = 5)
         {
             var userAsync = GetAllUsersAsync(page,per_page);
             userAsync.Wait();
@@ -56,48 +69,80 @@ namespace CoreQiita
         /// <summary>
         /// Get User by page :Async
         /// </summary>
-        /// <param name="page"></param>
-        /// <param name="per_page"></param>
-        /// <returns></returns>
-        public async Task<UserJson[]> GetAllUsersAsync(int page,int per_page = 1)
+        /// <param name="page">page number</param>
+        /// <param name="per_page">per page users</param>
+        /// <returns>UsersData(Array)</returns>
+        public async Task<UserJson[]> GetAllUsersAsync(int page = 1,int per_page = 5)
         {
-            var message = await Client.GetAsync($"{Url.BASE_USER_URL}users?page={page}&per_page{per_page}");
-            var response = await message.Content.ReadAsStringAsync();
-            var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
-            return Result;
+            var url = $"{Url.BASE_USER_URL}users?page={page}&per_page{per_page}";
+            return await GetUserAsync<UserJson[]>(url);
+        }
+        #endregion
+
+        #region GetStockers
+        /// <summary>
+        /// Get Stocker by item_id
+        /// </summary>
+        /// <param name="item_id">article id</param>
+        /// <param name="page">page number</param>
+        /// <param name="per_page">per page users</param>
+        /// <returns>UsersData(Array)</returns>
+        public UserJson[] GetStockers(string item_id,int page = 1,int per_page = 5)
+        {
+            var async = GetStockerAsync(item_id,page,per_page);
+            async.Wait();
+            return async.Result;
         }
 
+        /// <summary>
+        /// Get Stocker Async by item_id
+        /// </summary>
+        /// <param name="item_id">article id</param>
+        /// <param name="page">page number</param>
+        /// <param name="per_page">per page users</param>
+        /// <returns>UsersData(Array)</returns>
+        public async Task<UserJson[]> GetStockerAsync(string item_id, int page = 1, int per_page = 5)
+        {
+            var url = $"{Url.BASE_USER_URL}items/{item_id}/stockers?page={page}&per_page={per_page}";
+            return await GetUserAsync<UserJson[]>(url);
+        }
+        #endregion
+
+        #region Get Auth User
         /// <summary>
         /// Get Auth User
         /// </summary>
-        /// <returns>Auth User</returns>
+        /// <returns>Auth User Data</returns>
         public AuthUserJson GetUser()
         {
             if (AuthUser != null) return AuthUser;
-            USER_URL = $"{Url.BASE_USER_URL}authenticated_user";
-            return AuthUser = GetUser<AuthUserJson>();
+            var async = GetUserAsync();
+            async.Wait();
+            return async.Result;
         }
 
         /// <summary>
-        /// Get User
+        /// Get Auth User Async
         /// </summary>
-        /// <typeparam name="Type"></typeparam>
-        /// <returns></returns>
-        private Type GetUser<Type>()
+        /// <returns>Auth User Data</returns>
+        public async Task<AuthUserJson> GetUserAsync()
         {
-            var getUserAsync = GetUserAsync<Type>();
-            getUserAsync.Wait();
-            return getUserAsync.Result;
+            if (AuthUser != null) return AuthUser;
+            var url = $"{Url.BASE_USER_URL}authenticated_user";
+
+            return await GetUserAsync<AuthUserJson>(url);
         }
+        #endregion
 
         /// <summary>
-        /// Get User Async
+        /// Get User Async by url
         /// </summary>
-        /// <typeparam name="Type">UserJson or AuthUserJson</typeparam>
-        /// <returns></returns>
-        public async Task<Type> GetUserAsync<Type>()
+        /// <typeparam name="Type">DataType: UserJson or AuthUserJson</typeparam>
+        /// <param name="url">Url: do not inclue Host</param>
+        /// <returns>UserData</returns>
+        public async Task<Type> GetUserAsync<Type>(string url)
         {
-            var message = await Client.GetAsync(USER_URL);
+            var message = await Client.GetAsync(url);
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<Type>(response);
             return Result;
@@ -113,6 +158,7 @@ namespace CoreQiita
     [JsonObject]
     public class UserJson
     {
+        #region JsonProperties
         [JsonProperty("description")]
         public string Description { get;internal set; }
 
@@ -159,6 +205,7 @@ namespace CoreQiita
         public string WebsiteUrl { get; internal set; }
 
         internal static HttpClient Client {private get; set; }
+        #endregion
 
         public string[] GetAll()
         {
@@ -198,6 +245,32 @@ namespace CoreQiita
             return Result;
         }
         #endregion
+
+        public bool isFollowing()
+        {
+            var async = isFollowingAsync();
+            async.Wait();
+            return async.Result;
+        }
+        public async Task<bool> isFollowingAsync()
+        {
+            var message = await Client.GetAsync($"{Url.BASE_USER_URL}users/{Id}/following");
+            if ((int)message.StatusCode == 204) return true;
+            else return false;
+        }
+
+        public bool Following()
+        {
+            var async = FollowingAsync();
+            async.Wait();
+            return async.Result;
+        }
+        public async Task<bool> FollowingAsync()
+        {
+            var message = await Client.PutAsync($"{Url.BASE_USER_URL}users/{Id}/following",new StringContent(""));
+            if ((int)message.StatusCode == 204) return true;
+            else return false;
+        }
     }
 
     /// <summary>
