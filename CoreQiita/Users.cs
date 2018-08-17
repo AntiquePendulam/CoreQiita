@@ -47,7 +47,7 @@ namespace CoreQiita
         /// <returns>UserData</returns>
         public async Task<UserJson> GetUserAsync(string user_id)
         {
-            var url = $"{Url.BASE_USER_URL}users/{user_id}";
+            var url = $"api/v2/users/{user_id}";
             return await GetUserAsync<UserJson>(url);
         }
         #endregion
@@ -74,7 +74,7 @@ namespace CoreQiita
         /// <returns>UsersData(Array)</returns>
         public async Task<UserJson[]> GetAllUsersAsync(int page = 1,int per_page = 5)
         {
-            var url = $"{Url.BASE_USER_URL}users?page={page}&per_page{per_page}";
+            var url = $"api/v2/users?page={page}&per_page{per_page}";
             return await GetUserAsync<UserJson[]>(url);
         }
         #endregion
@@ -103,7 +103,7 @@ namespace CoreQiita
         /// <returns>UsersData(Array)</returns>
         public async Task<UserJson[]> GetStockerAsync(string item_id, int page = 1, int per_page = 5)
         {
-            var url = $"{Url.BASE_USER_URL}items/{item_id}/stockers?page={page}&per_page={per_page}";
+            var url = $"api/v2/items/{item_id}/stockers?page={page}&per_page={per_page}";
             return await GetUserAsync<UserJson[]>(url);
         }
         #endregion
@@ -128,7 +128,7 @@ namespace CoreQiita
         public async Task<AuthUserJson> GetUserAsync()
         {
             if (AuthUser != null) return AuthUser;
-            var url = $"{Url.BASE_USER_URL}authenticated_user";
+            var url = $"api/v2/authenticated_user";
 
             return await GetUserAsync<AuthUserJson>(url);
         }
@@ -215,15 +215,15 @@ namespace CoreQiita
         }
 
         #region Get Folowees
-        public UserJson[] GetFolowees(int page = 1,int per_page = 1)
+        public UserJson[] GetFolowees(int page = 1,int per_page = 5)
         {
             var async = GetFoloweesAsync(page,per_page);
             async.Wait();
             return async.Result;
         }
-        public async Task<UserJson[]> GetFoloweesAsync(int page = 1, int per_page = 1)
+        public async Task<UserJson[]> GetFoloweesAsync(int page = 1, int per_page = 5)
         {
-            var message = await Client.GetAsync($"{Url.BASE_USER_URL}users/{Id}/followees?page={page}&per_page{per_page}");
+            var message = await Client.GetAsync($"api/v2/users/{Id}/followees?page={page}&per_page{per_page}");
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
             return Result;
@@ -231,15 +231,15 @@ namespace CoreQiita
         #endregion
 
         #region GetFolowers
-        public UserJson[] GetFolowers(int page = 1, int per_page = 1)
+        public UserJson[] GetFolowers(int page = 1, int per_page = 5)
         {
             var async = GetFolowersAsync(page, per_page);
             async.Wait();
             return async.Result;
         }
-        public async Task<UserJson[]> GetFolowersAsync(int page = 1, int per_page = 1)
+        public async Task<UserJson[]> GetFolowersAsync(int page = 1, int per_page = 5)
         {
-            var message = await Client.GetAsync($"{Url.BASE_USER_URL}users/{Id}/followers?page={page}&per_page{per_page}");
+            var message = await Client.GetAsync($"api/v2/users/{Id}/followers?page={page}&per_page{per_page}");
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
             return Result;
@@ -252,9 +252,10 @@ namespace CoreQiita
             async.Wait();
             return async.Result;
         }
+
         public async Task<bool> isFollowingAsync()
         {
-            var message = await Client.GetAsync($"{Url.BASE_USER_URL}users/{Id}/following");
+            var message = await Client.GetAsync($"api/v2/users/{Id}/following");
             if ((int)message.StatusCode == 204) return true;
             else return false;
         }
@@ -265,9 +266,10 @@ namespace CoreQiita
             async.Wait();
             return async.Result;
         }
+
         public async Task<bool> FollowingAsync()
         {
-            var message = await Client.PutAsync($"{Url.BASE_USER_URL}users/{Id}/following",new StringContent(""));
+            var message = await Client.PutAsync($"api/v2/users/{Id}/following",new StringContent(""));
             if ((int)message.StatusCode == 204) return true;
             else return false;
         }

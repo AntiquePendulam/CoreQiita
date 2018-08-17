@@ -10,6 +10,5 @@ namespace CoreQiita
     {
         internal const string BASE_URL = "https://qiita.com/";
         internal const string AuthTokenURL = @"api/v2/access_tokens";
-        internal const string BASE_USER_URL = "api/v2/";
     }
 }

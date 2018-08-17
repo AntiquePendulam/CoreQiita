@@ -11,7 +11,8 @@ namespace CoreQiita
     public class Tokens
     {
         public string Token { get; private set; }
-        public Users Users { get; set; }
+        public Users Users { get;private set; }
+        public Items Items { get;private set; }
 
         internal HttpClient client = new HttpClient() {BaseAddress = new Uri(Url.BASE_URL) };
 
@@ -28,6 +29,11 @@ namespace CoreQiita
             {
                 Client = client
             };
+            Items = new Items()
+            {
+                Client = client
+            };
+            
         }
 
         /// <summary>
@@ -50,8 +56,20 @@ namespace CoreQiita
         public async Task<bool> TokenDeleteAsync()
         {
             var message = await client.DeleteAsync($"/api/v2/access_tokens/{Token}");
-            if ((int)message.StatusCode == 204) return true;
-            else return false;
+            return (int)message.StatusCode == 204;
+        }
+
+        public bool DeleteItem(string item_id)
+        {
+            var async = DeleteItemAsync(item_id);
+            async.Wait();
+            return async.Result;
+        }
+
+        public async Task<bool> DeleteItemAsync(string item_id)
+        {
+            var message = await client.DeleteAsync($"/api/v2/access_tokens/{Token}");
+            return (int)message.StatusCode == 200;
         }
 
         public LikeData[] Likes(string item_id)
