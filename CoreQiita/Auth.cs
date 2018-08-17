@@ -11,23 +11,18 @@ namespace CoreQiita
     public class Auth
     {
         public string AuthURL { get; private set; }
-        public Tokens Token { get; set; }
+        public Tokens Token { get;private set; }
 
         private string ClientID { get; set; }
         private string ClientSecret { get; set; }
 
+        private readonly string[] scopemode = { "read_qiita", "write_qiita", "read_qiita+write_qiita" };
+
         public Auth(string client_id, string client_secret, ScopeMode mode = ScopeMode.READ_WRITE)
         {
-            AuthURL = $"{Url.BASE_URL}api/v2/oauth/authorize?client_id={client_id}&scope={GetMode(mode)}";
+            AuthURL = $"{Url.BASE_URL}api/v2/oauth/authorize?client_id={client_id}&scope={scopemode[(int)mode]}";
             this.ClientID = client_id;
             this.ClientSecret = client_secret;
-        }
-
-        private string GetMode(ScopeMode mode)
-        {
-            var memberInfo = mode.GetType().GetMember(mode.ToString()).First();
-            var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(ContentAttribute)) as ContentAttribute;
-            return attribute.Mode;
         }
 
         public Tokens GetToken(string code)

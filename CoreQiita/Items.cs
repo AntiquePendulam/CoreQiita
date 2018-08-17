@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace CoreQiita
 {
-    public enum ScopeMode : byte
+    class Items
     {
-        READ = 0,
-        WRITE = 1,
-        READ_WRITE = 2
+
     }
 }
