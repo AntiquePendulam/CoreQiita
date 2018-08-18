@@ -10,8 +10,13 @@ namespace CoreQiita
 {
     public class Items
     {
-        internal HttpClient Client { get; set; }
 
+        /// <summary>
+        /// 認証中のユーザの投稿を取得
+        /// </summary>
+        /// <param name="page">ページ番号 100まで</param>
+        /// <param name="per_page">ページ内の要素数</param>
+        /// <returns></returns>
         public ItemData[] GetAuthUserItem(int page = 1,int per_page = 5)
         {
             var async = GetAuthUserItemAsync(page, per_page);
@@ -38,9 +43,30 @@ namespace CoreQiita
             return await GetItemAsync(url);
         }
 
+        #region GetALLItem
+        /// <summary>
+        /// 投稿の一覧を作成日時降順で返します
+        /// </summary>
+        /// <param name="page">ページ番号　100</param>
+        /// <param name="per_page">ページ内の要素数</param>
+        /// <returns></returns>
+        public ItemData[] GetAllItem(int page = 1,int per_page = 5)
+        {
+            var async = GetAllItemAsync(page, per_page);
+            async.Wait();
+            return async.Result;
+        }
+
+        public async Task<ItemData[]> GetAllItemAsync(int page = 1,int per_page = 5)
+        {
+            var url = $"api/v2/items?page={page}&per_page={per_page}";
+            return await GetItemAsync(url);
+        }
+        #endregion
+
         private async Task<ItemData[]> GetItemAsync(string url)
         {
-            var message = await Client.GetAsync(url);
+            var message = await Tokens.client.GetAsync(url);
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<ItemData[]>(response);
             return Result;
@@ -78,7 +104,7 @@ namespace CoreQiita
             };
             var jsondata = JsonConvert.SerializeObject(data);
             var content = new StringContent(jsondata, Encoding.UTF8, ContentType.Json);
-            var response = await Client.PostAsync("api/v2/items", content);
+            var response = await Tokens.client.PostAsync("api/v2/items", content);
             return (int)response.StatusCode == 201;
         }
     }
@@ -108,6 +134,7 @@ namespace CoreQiita
     [JsonObject]
     public class ItemData
     {
+        #region ItemData Properties
         [JsonProperty("rendered_body")]
         public string RenderedBody { get; set; }
 
@@ -171,6 +198,43 @@ namespace CoreQiita
 
         [JsonProperty("page_views_count")]
         public int? Views { get; set; }
+        #endregion
+
+        public bool Stock()
+        {
+            var async = StockAsync();
+            async.Wait();
+            return async.Result;
+        }
+        public async Task<bool> StockAsync()
+        {
+            var message = await Tokens.client.PutAsync($"api/v2/items/{Id}/stock", new StringContent(""));
+            return (int)message.StatusCode == 204;
+        }
+
+        public bool DeleteStock()
+        {
+            var async = DeleteStockAsync();
+            async.Wait();
+            return async.Result;
+        }
+        public async Task<bool> DeleteStockAsync()
+        {
+            var message = await Tokens.client.DeleteAsync($"api/v2/items/{Id}/stock");
+            return (int)message.StatusCode == 204;
+        }
+
+        public bool isStock()
+        {
+            var async = isStockAsync();
+            async.Wait();
+            return async.Result;
+        }
+        public async Task<bool> isStockAsync()
+        {
+            var message = await Tokens.client.GetAsync($"api/v2/items/{Id}/stock");
+            return (int)message.StatusCode == 204;
+        }
     }
 
     [JsonObject]

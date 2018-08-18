@@ -13,20 +13,6 @@ namespace CoreQiita
         private string USER_ID { get; set; }
         public AuthUserJson AuthUser { get; private set; }
 
-        private HttpClient _client;
-        internal HttpClient Client
-        {
-            get
-            {
-                return _client;
-            }
-            set
-            {
-                _client = value;
-                UserJson.Client = _client;
-            }
-        }
-
         #region GetUser by user_id
         /// <summary>
         /// Get User by user_id
@@ -142,7 +128,7 @@ namespace CoreQiita
         /// <returns>UserData</returns>
         public async Task<Type> GetUserAsync<Type>(string url)
         {
-            var message = await Client.GetAsync(url);
+            var message = await Tokens.client.GetAsync(url);
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<Type>(response);
             return Result;
@@ -203,8 +189,6 @@ namespace CoreQiita
 
         [JsonProperty("website_url")]
         public string WebsiteUrl { get; internal set; }
-
-        internal static HttpClient Client {private get; set; }
         #endregion
 
         public string[] GetAll()
@@ -223,7 +207,7 @@ namespace CoreQiita
         }
         public async Task<UserJson[]> GetFoloweesAsync(int page = 1, int per_page = 5)
         {
-            var message = await Client.GetAsync($"api/v2/users/{Id}/followees?page={page}&per_page{per_page}");
+            var message = await Tokens.client.GetAsync($"api/v2/users/{Id}/followees?page={page}&per_page{per_page}");
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
             return Result;
@@ -239,7 +223,7 @@ namespace CoreQiita
         }
         public async Task<UserJson[]> GetFolowersAsync(int page = 1, int per_page = 5)
         {
-            var message = await Client.GetAsync($"api/v2/users/{Id}/followers?page={page}&per_page{per_page}");
+            var message = await Tokens.client.GetAsync($"api/v2/users/{Id}/followers?page={page}&per_page{per_page}");
             var response = await message.Content.ReadAsStringAsync();
             var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
             return Result;
@@ -252,10 +236,9 @@ namespace CoreQiita
             async.Wait();
             return async.Result;
         }
-
         public async Task<bool> isFollowingAsync()
         {
-            var message = await Client.GetAsync($"api/v2/users/{Id}/following");
+            var message = await Tokens.client.GetAsync($"api/v2/users/{Id}/following");
             if ((int)message.StatusCode == 204) return true;
             else return false;
         }
@@ -266,10 +249,9 @@ namespace CoreQiita
             async.Wait();
             return async.Result;
         }
-
         public async Task<bool> FollowingAsync()
         {
-            var message = await Client.PutAsync($"api/v2/users/{Id}/following",new StringContent(""));
+            var message = await Tokens.client.PutAsync($"api/v2/users/{Id}/following",new StringContent(""));
             if ((int)message.StatusCode == 204) return true;
             else return false;
         }

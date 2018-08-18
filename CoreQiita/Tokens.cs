@@ -14,7 +14,7 @@ namespace CoreQiita
         public Users Users { get;private set; }
         public Items Items { get;private set; }
 
-        internal HttpClient client = new HttpClient() {BaseAddress = new Uri(Url.BASE_URL) };
+        internal static HttpClient client = new HttpClient() {BaseAddress = new Uri(Url.BASE_URL) };
 
         /// <summary>
         /// GetToken
@@ -25,14 +25,8 @@ namespace CoreQiita
             this.Token = token;
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-            Users = new Users()
-            {
-                Client = client
-            };
-            Items = new Items()
-            {
-                Client = client
-            };
+            Users = new Users();
+            Items = new Items();
             
         }
 
