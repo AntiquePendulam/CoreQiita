@@ -50,9 +50,7 @@ namespace CoreQiita
         /// <returns>無効化の成否</returns>
         public bool TokenDelete()
         {
-            var task = TokenDeleteAsync();
-            task.Wait();
-            return task.Result;
+            return TokenDeleteAsync().Result;
         }
 
         /// <summary>

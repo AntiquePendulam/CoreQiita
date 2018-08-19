@@ -24,9 +24,7 @@ namespace CoreQiita
         /// <returns>ユーザ情報</returns>
         public UserJson GetUser(string user_id)
         {
-            var async = GetUserAsync(user_id);
-            async.Wait();
-            return async.Result;
+            return GetUserAsync(user_id).Result;
         }
 
         /// <summary>
@@ -50,9 +48,7 @@ namespace CoreQiita
         /// <returns>ユーザ情報(配列)</returns>
         public UserJson[] GetAllUsers(int page = 1, int per_page = 5)
         {
-            var userAsync = GetAllUsersAsync(page,per_page);
-            userAsync.Wait();
-            return userAsync.Result;
+            return GetAllUsersAsync(page, per_page).Result;
         }
 
         /// <summary>
@@ -78,9 +74,7 @@ namespace CoreQiita
         /// <returns>ユーザ情報(配列)</returns>
         public UserJson[] GetStockers(string item_id,int page = 1,int per_page = 5)
         {
-            var async = GetStockerAsync(item_id,page,per_page);
-            async.Wait();
-            return async.Result;
+            return GetStockerAsync(item_id, page, per_page).Result;
         }
 
         /// <summary>
@@ -105,9 +99,7 @@ namespace CoreQiita
         public AuthUserJson GetAuthUser()
         {
             if (AuthUser != null) return AuthUser;
-            var async = GetAuthUserAsync();
-            async.Wait();
-            return async.Result;
+            return GetAuthUserAsync().Result;
         }
 
         /// <summary>
@@ -250,9 +242,7 @@ namespace CoreQiita
         /// <returns>ユーザ情報(配列)</returns>
         public UserJson[] GetFolowees(int page = 1,int per_page = 5)
         {
-            var async = GetFoloweesAsync(page,per_page);
-            async.Wait();
-            return async.Result;
+            return GetFoloweesAsync(page, per_page).Result;
         }
         /// <summary>
         /// ユーザをフォローしているユーザを非同期取得します
@@ -297,15 +287,14 @@ namespace CoreQiita
             return Result;
         }
         #endregion
+
         /// <summary>
         /// フォロー状態か取得します
         /// </summary>
         /// <returns>True:フォロー中 False:未フォロー</returns>
         public bool isFollowing()
         {
-            var async = isFollowingAsync();
-            async.Wait();
-            return async.Result;
+            return isFollowingAsync().Result;
         }
 
         /// <summary>
@@ -325,9 +314,7 @@ namespace CoreQiita
         /// <returns>フォローの成否</returns>
         public bool Following()
         {
-            var async = FollowingAsync();
-            async.Wait();
-            return async.Result;
+            return FollowingAsync().Result;
         }
         /// <summary>
         /// このユーザをフォローします
@@ -336,8 +323,7 @@ namespace CoreQiita
         public async Task<bool> FollowingAsync()
         {
             var message = await Tokens.client.PutAsync($"api/v2/users/{Id}/following",new StringContent(""));
-            if ((int)message.StatusCode == 204) return true;
-            else return false;
+            return (int)message.StatusCode == 204;
         }
     }
 

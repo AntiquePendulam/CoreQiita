@@ -23,9 +23,7 @@ namespace CoreQiita
         /// <returns>ユーザの投稿内容(配列)</returns>
         public ItemData[] GetAuthUserItems(int page = 1,int per_page = 5)
         {
-            var async = GetAuthUserItemsAsync(page, per_page);
-            async.Wait();
-            return async.Result;
+            return GetAuthUserItemsAsync(page, per_page).Result;
         }
 
         /// <summary>
@@ -82,6 +80,7 @@ namespace CoreQiita
             async.Wait();
             return async.Result;
         }
+
         /// <summary>
         /// 投稿の一覧を作成日時降順で非同期取得します
         /// </summary>
@@ -94,7 +93,6 @@ namespace CoreQiita
             return await GetItemsAsync(url);
         }
         #endregion
-
 
         private async Task<ItemData[]> GetItemsAsync(string url)
         {
@@ -111,9 +109,7 @@ namespace CoreQiita
         /// <returns>投稿内容</returns>
         public ItemData GetItem(string item_id)
         {
-            var async = GetItemAsync(item_id);
-            async.Wait();
-            return async.Result;
+            return GetItemAsync(item_id).Result;
         }
 
         /// <summary>
@@ -157,9 +153,7 @@ namespace CoreQiita
         /// <returns>投稿の成否</returns>
         public bool Create(string title, Tags[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
-            var async = CreateAsync(title, tags, body, gist, isprivate, tweet);
-            async.Wait();
-            return async.Result;
+            return CreateAsync(title, tags, body, gist, isprivate, tweet).Result;
         }
 
         /// <summary>
@@ -213,10 +207,9 @@ namespace CoreQiita
         /// <returns>いいねのデータ</returns>
         public LikeData[] Likes(string item_id)
         {
-            var async = LikesAsync(item_id);
-            async.Wait();
-            return async.Result;
+            return LikesAsync(item_id).Result;
         }
+
         /// <summary>
         /// 投稿につけられたいいねの日時とユーザーデータを非同期取得します
         /// </summary>
@@ -237,10 +230,9 @@ namespace CoreQiita
         /// <returns>削除の成否</returns>
         public bool DeleteItem(string item_id)
         {
-            var async = DeleteItemAsync(item_id);
-            async.Wait();
-            return async.Result;
+            return DeleteItemAsync(item_id).Result;
         }
+
         /// <summary>
         /// 投稿を非同期で削除します
         /// </summary>
@@ -251,6 +243,50 @@ namespace CoreQiita
             var message = await Tokens.client.DeleteAsync($"api/v2/items/{item_id}");
             return (int)message.StatusCode == 204;
         }
+
+        /// <summary>
+        /// 記事を更新します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="isprivate">限定共有にするか</param>
+        /// <returns></returns>
+        public bool PatchItem(string item_id, string title, Tags[] tags, string body, bool isprivate = false)
+        {
+            return PatchItemAsync(item_id, title, tags, body, isprivate).Result;
+        }
+
+        //HttpClientにPatch実装してほしいなぁ
+        private readonly HttpMethod patchmethod = new HttpMethod("PATCH");
+        /// <summary>
+        /// 記事を非同期で更新します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="isprivate">限定共有にするか</param>
+        /// <returns></returns>
+        public async Task<bool> PatchItemAsync(string item_id, string title, Tags[] tags, string body, bool isprivate = false)
+        {
+            var jsondata = new PatchItemData()
+            {
+                Body = body,
+                Private = isprivate,
+                Tags = tags,
+                Title = title
+            };
+
+            var json = JsonConvert.SerializeObject(jsondata);
+            var content = new StringContent(json, Encoding.UTF8, ContentType.Json);
+            var request = new HttpRequestMessage(patchmethod, $"https://qiita.com/api/v2/items/{item_id}") { Content = content };
+
+            var message = await Tokens.client.SendAsync(request);
+            return (int)message.StatusCode == 200;
+        }
+
     }
 
     [JsonObject]
@@ -273,6 +309,22 @@ namespace CoreQiita
 
         [JsonProperty("tweet")]
         internal bool Tweet { get; set; }
+    }
+
+    [JsonObject]
+    internal class PatchItemData
+    {
+        [JsonProperty("body")]
+        internal string Body { get; set; }
+
+        [JsonProperty("private")]
+        internal bool Private { get; set; }
+
+        [JsonProperty("tags")]
+        internal Tags[] Tags { get; set; }
+
+        [JsonProperty("title")]
+        internal string Title { get; set; }
     }
 
     /// <summary>
@@ -398,9 +450,7 @@ namespace CoreQiita
         /// <returns>ストックの成否</returns>
         public bool Stock()
         {
-            var async = StockAsync();
-            async.Wait();
-            return async.Result;
+            return StockAsync().Result;
         }
 
         /// <summary>
@@ -419,9 +469,7 @@ namespace CoreQiita
         /// <returns>削除の成否</returns>
         public bool DeleteStock()
         {
-            var async = DeleteStockAsync();
-            async.Wait();
-            return async.Result;
+            return DeleteStockAsync().Result;
         }
         /// <summary>
         /// 記事をストックから非同期で削除します
@@ -439,9 +487,7 @@ namespace CoreQiita
         /// <returns>ストックの有無</returns>
         public bool isStock()
         {
-            var async = isStockAsync();
-            async.Wait();
-            return async.Result;
+            return isStockAsync().Result;
         }
         /// <summary>
         /// 記事がストックされているか非同期で確認します
