@@ -11,7 +11,7 @@ namespace CoreQiita
     public class Users
     {
         private string USER_ID { get; set; }
-        public AuthUserJson AuthUser { get; private set; }
+        private AuthUserJson AuthUser { get; set; }
 
         #region GetUser by user_id
         /// <summary>
@@ -126,7 +126,7 @@ namespace CoreQiita
         /// <typeparam name="Type">DataType: UserJson or AuthUserJson</typeparam>
         /// <param name="url">Url: do not inclue Host</param>
         /// <returns>UserData</returns>
-        public async Task<Type> GetUserAsync<Type>(string url)
+        private async Task<Type> GetUserAsync<Type>(string url)
         {
             var message = await Tokens.client.GetAsync(url);
             var response = await message.Content.ReadAsStringAsync();

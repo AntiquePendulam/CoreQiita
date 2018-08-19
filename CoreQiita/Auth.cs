@@ -53,7 +53,7 @@ namespace CoreQiita
         }
     }
     [JsonObject]
-    class PostJson
+    internal class PostJson
     {
         [JsonProperty("client_id")]
         private string Id { get; set; }
@@ -73,7 +73,7 @@ namespace CoreQiita
     }
 
     [JsonObject]
-    class ResponseJson
+    internal class ResponseJson
     {
         [JsonProperty("token")]
         internal string Token { get; set; }
