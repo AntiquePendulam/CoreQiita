@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace CoreQiita
 {
+    /// <summary>
+    /// 投稿記事クラス
+    /// </summary>
     public class Items
     {
 
@@ -129,19 +132,29 @@ namespace CoreQiita
         /// <summary>
         /// 記事を新しく作成します
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="tags"></param>
-        /// <param name="body"></param>
-        /// <param name="gist"></param>
-        /// <param name="isprivate"></param>
-        /// <param name="tweet"></param>
-        /// <returns></returns>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="gist">本文中のコードをGistに投稿するかどうか(GitHubとの連携が必要)</param>
+        /// <param name="isprivate">限定共有記事か公開記事か</param>
+        /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
+        /// <returns>投稿の成否</returns>
         public bool Create(string title, Tags tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             var t = new Tags[] { tags };
             return Create(title, t, body, gist, isprivate, tweet);
         }
 
+        /// <summary>
+        /// 記事を新しく作成します
+        /// </summary>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="gist">本文中のコードをGistに投稿するかどうか(GitHubとの連携が必要)</param>
+        /// <param name="isprivate">限定共有記事か公開記事か</param>
+        /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
+        /// <returns>投稿の成否</returns>
         public bool Create(string title, Tags[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             var async = CreateAsync(title, tags, body, gist, isprivate, tweet);
@@ -149,12 +162,32 @@ namespace CoreQiita
             return async.Result;
         }
 
+        /// <summary>
+        /// 記事を非同期的に新しく作成します
+        /// </summary>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="gist">本文中のコードをGistに投稿するかどうか(GitHubとの連携が必要)</param>
+        /// <param name="isprivate">限定共有記事か公開記事か</param>
+        /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
+        /// <returns>投稿の成否</returns>
         public async Task<bool> CreateAsync(string title, Tags tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             var t = new Tags[] { tags };
             return await CreateAsync(title, t, body, gist, isprivate, tweet);
         }
 
+        /// <summary>
+        /// 記事を非同期的に新しく作成します
+        /// </summary>
+        /// <param name="title">タイトル</param>
+        /// <param name="tags">タグ</param>
+        /// <param name="body">本文</param>
+        /// <param name="gist">本文中のコードをGistに投稿するかどうか(GitHubとの連携が必要)</param>
+        /// <param name="isprivate">限定共有記事か公開記事か</param>
+        /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
+        /// <returns>投稿の成否</returns>
         public async Task<bool> CreateAsync(string title, Tags[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             var data = new PostItemData()
@@ -173,13 +206,22 @@ namespace CoreQiita
             return (int)response.StatusCode == 201;
         }
 
+        /// <summary>
+        /// 投稿につけられたいいねの日時とユーザーデータを取得します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねのデータ</returns>
         public LikeData[] Likes(string item_id)
         {
             var async = LikesAsync(item_id);
             async.Wait();
             return async.Result;
         }
-
+        /// <summary>
+        /// 投稿につけられたいいねの日時とユーザーデータを非同期取得します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねのデータ</returns>
         public async Task<LikeData[]> LikesAsync(string item_id)
         {
             var message = await Tokens.client.GetAsync($"/api/v2/items/{item_id}/likes");
@@ -188,13 +230,22 @@ namespace CoreQiita
             return Result;
         }
 
+        /// <summary>
+        /// 投稿を削除します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>削除の成否</returns>
         public bool DeleteItem(string item_id)
         {
             var async = DeleteItemAsync(item_id);
             async.Wait();
             return async.Result;
         }
-
+        /// <summary>
+        /// 投稿を非同期で削除します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>削除の成否</returns>
         public async Task<bool> DeleteItemAsync(string item_id)
         {
             var message = await Tokens.client.DeleteAsync($"api/v2/items/{item_id}");
@@ -224,23 +275,39 @@ namespace CoreQiita
         internal bool Tweet { get; set; }
     }
 
+    /// <summary>
+    /// 投稿記事データ
+    /// </summary>
     [JsonObject]
     public class ItemData
     {
         #region ItemData Properties
+        /// <summary>
+        /// HTML形式の本文
+        /// </summary>
         [JsonProperty("rendered_body")]
         public string RenderedBody { get; set; }
 
+        /// <summary>
+        /// Markdown形式の本文
+        /// </summary>
         [JsonProperty("body")]
         public string Body { get; set; }
 
+        /// <summary>
+        /// コメント数
+        /// </summary>
         [JsonProperty("comments_count")]
         public int CommentsCount { get; set; }
 
         [JsonProperty("created_at")]
-        public string _Date { get; set; }
+        internal string _Date { get; set; }
 
         private DateTime _date;
+
+        /// <summary>
+        /// 作成日時(DateTime型)
+        /// </summary>
         public DateTime Date
         {
             get
@@ -251,28 +318,51 @@ namespace CoreQiita
             }
         }
 
+        /// <summary>
+        /// Qiita:Teamグループ
+        /// </summary>
         [JsonProperty("group")]
         public Group Group { get; set; }
 
+        /// <summary>
+        /// 記事ID
+        /// </summary>
         [JsonProperty("id")]
         public string Id { get; set; }
 
+        /// <summary>
+        /// いいねの数
+        /// </summary>
         [JsonProperty("likes_count")]
         public int LikesCount { get; set; }
 
+        /// <summary>
+        /// 限定共有状態か
+        /// </summary>
         [JsonProperty("private")]
         public bool isPrivate { get; set; }
 
+        /// <summary>
+        /// 記事につけられたタグ
+        /// </summary>
         [JsonProperty("tags")]
         public Tags[] Tags { get; set; }
 
+        /// <summary>
+        /// 記事タイトル
+        /// </summary>
         [JsonProperty("title")]
         public string Title { get; set; }
 
+
         [JsonProperty("updated_at")]
-        public string _UpdateDate { get; set; }
+        internal string _UpdateDate { get; set; }
+
 
         private DateTime _updatedate;
+        /// <summary>
+        /// 最終更新日時
+        /// </summary>
         public DateTime UpdateDate
         {
             get
@@ -283,46 +373,80 @@ namespace CoreQiita
             }
         }
 
+        /// <summary>
+        /// 記事のURL
+        /// </summary>
         [JsonProperty("url")]
         public string Url { get; set; }
 
+        /// <summary>
+        /// 投稿ユーザ
+        /// </summary>
         [JsonProperty("user")]
         public UserJson User { get; set; }
 
+        /// <summary>
+        /// 閲覧数
+        /// </summary>
         [JsonProperty("page_views_count")]
         public int? Views { get; set; }
         #endregion
 
+        /// <summary>
+        /// 記事をストックします
+        /// </summary>
+        /// <returns>ストックの成否</returns>
         public bool Stock()
         {
             var async = StockAsync();
             async.Wait();
             return async.Result;
         }
+
+        /// <summary>
+        /// 記事を非同期でストックします
+        /// </summary>
+        /// <returns>ストックの成否</returns>
         public async Task<bool> StockAsync()
         {
             var message = await Tokens.client.PutAsync($"api/v2/items/{Id}/stock", new StringContent(""));
             return (int)message.StatusCode == 204;
         }
 
+        /// <summary>
+        /// 記事をストックから削除します
+        /// </summary>
+        /// <returns>削除の成否</returns>
         public bool DeleteStock()
         {
             var async = DeleteStockAsync();
             async.Wait();
             return async.Result;
         }
+        /// <summary>
+        /// 記事をストックから非同期で削除します
+        /// </summary>
+        /// <returns>削除の成否</returns>
         public async Task<bool> DeleteStockAsync()
         {
             var message = await Tokens.client.DeleteAsync($"api/v2/items/{Id}/stock");
             return (int)message.StatusCode == 204;
         }
 
+        /// <summary>
+        /// 記事がストックされているか確認します
+        /// </summary>
+        /// <returns>ストックの有無</returns>
         public bool isStock()
         {
             var async = isStockAsync();
             async.Wait();
             return async.Result;
         }
+        /// <summary>
+        /// 記事がストックされているか非同期で確認します
+        /// </summary>
+        /// <returns>ストックの有無</returns>
         public async Task<bool> isStockAsync()
         {
             var message = await Tokens.client.GetAsync($"api/v2/items/{Id}/stock");
@@ -330,6 +454,9 @@ namespace CoreQiita
         }
     }
 
+    /// <summary>
+    /// いいねのデータ
+    /// </summary>
     [JsonObject]
     public class LikeData
     {
@@ -337,6 +464,9 @@ namespace CoreQiita
         internal string _Date { get; set; }
 
         private DateTime _date;
+        /// <summary>
+        /// いいねが付けられた日時
+        /// </summary>
         public DateTime Date
         {
             get
@@ -346,18 +476,26 @@ namespace CoreQiita
                 return _date;
             }
         }
-
+        /// <summary>
+        /// いいねをつけたユーザ
+        /// </summary>
         [JsonProperty("user")]
         public UserJson User { get; internal set; }
     }
-
+    /// <summary>
+    /// Qiita:Teamのグループデータ
+    /// </summary>
     [JsonObject]
     public class Group
     {
         [JsonProperty("created_at")]
         internal string _Date { get; set; }
 
+
         private DateTime _date;
+        /// <summary>
+        /// 作成日時
+        /// </summary>
         public DateTime Date
         {
             get
@@ -368,19 +506,32 @@ namespace CoreQiita
             }
         }
 
+        /// <summary>
+        /// グループID
+        /// </summary>
         [JsonProperty("id")]
         public int Id { get; set; }
 
+        /// <summary>
+        /// グループの名前
+        /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// 非公開グループかどうか
+        /// </summary>
         [JsonProperty("private")]
         public bool isPrivate { get; set; }
 
         [JsonProperty("updated_at")]
         internal string _UpdateDate { get; set; }
 
+
         private DateTime _updatedate;
+        /// <summary>
+        /// 最終更新日時
+        /// </summary>
         public DateTime UpdateDate
         {
             get
@@ -391,21 +542,39 @@ namespace CoreQiita
             }
         }
 
+        /// <summary>
+        /// グループのチーム上での一意な名前
+        /// </summary>
         [JsonProperty("url_name")]
         public string UrlName { get; set; }
     }
 
+    /// <summary>
+    /// 記事タグ
+    /// </summary>
     [JsonObject]
     public class Tags
     {
+        /// <summary>
+        /// タグ名
+        /// </summary>
         [JsonProperty("name")]
         public string Name { get;private set; }
 
+        /// <summary>
+        /// タグを作成します
+        /// </summary>
+        /// <param name="name">タグ名</param>
         public Tags(string name)
         {
             this.Name = name;
         }
 
+        /// <summary>
+        /// 文字列配列から複数のタグを作成します
+        /// </summary>
+        /// <param name="tag">タグ(可変長)</param>
+        /// <returns>タグ配列</returns>
         public static Tags[] BuildTags(params string[] tag)
         {
             var tags = tag.Select(value => new Tags(value)).ToArray();

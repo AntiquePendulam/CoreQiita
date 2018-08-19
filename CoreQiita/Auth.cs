@@ -8,9 +8,19 @@ using Newtonsoft.Json;
 
 namespace CoreQiita
 {
+    /// <summary>
+    /// 認証クラス
+    /// </summary>
     public class Auth
     {
+        /// <summary>
+        /// 認証用URL
+        /// </summary>
         public string AuthURL { get; private set; }
+
+        /// <summary>
+        /// 認証中のトークン
+        /// </summary>
         public Tokens Token { get;private set; }
 
         private string ClientID { get; set; }
@@ -18,6 +28,12 @@ namespace CoreQiita
 
         private readonly string[] scopemode = { "read_qiita", "write_qiita", "read_qiita+write_qiita" };
 
+        /// <summary>
+        /// OAuthでQiitaに接続します
+        /// </summary>
+        /// <param name="client_id">クライアントID</param>
+        /// <param name="client_secret">クライアントシークレット</param>
+        /// <param name="mode">Qiita権限)</param>
         public Auth(string client_id, string client_secret, ScopeMode mode = ScopeMode.READ_WRITE)
         {
             AuthURL = $"{Url.BASE_URL}api/v2/oauth/authorize?client_id={client_id}&scope={scopemode[(int)mode]}";
@@ -25,6 +41,11 @@ namespace CoreQiita
             this.ClientSecret = client_secret;
         }
 
+        /// <summary>
+        /// アクセストークンを取得します
+        /// </summary>
+        /// <param name="code">ユーザ認証後のコード</param>
+        /// <returns>トークン</returns>
         public Tokens GetToken(string code)
         {
             var tokenJson = new PostJson(ClientID, ClientSecret, code);
