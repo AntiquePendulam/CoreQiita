@@ -205,9 +205,9 @@ namespace CoreQiita
         /// </summary>
         /// <param name="item_id">記事ID</param>
         /// <returns>いいねのデータ</returns>
-        public LikeData[] Likes(string item_id)
+        public LikeData[] GetLikeUsers(string item_id)
         {
-            return LikesAsync(item_id).Result;
+            return GetLikeUsersAsync(item_id).Result;
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace CoreQiita
         /// </summary>
         /// <param name="item_id">記事ID</param>
         /// <returns>いいねのデータ</returns>
-        public async Task<LikeData[]> LikesAsync(string item_id)
+        public async Task<LikeData[]> GetLikeUsersAsync(string item_id)
         {
             var message = await Tokens.client.GetAsync($"/api/v2/items/{item_id}/likes");
             var response = await message.Content.ReadAsStringAsync();
@@ -287,6 +287,68 @@ namespace CoreQiita
             return (int)message.StatusCode == 200;
         }
 
+        /// <summary>
+        /// いいねを取り消します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>取り消しの成否</returns>
+        public bool DeleteLike(string item_id)
+        {
+            return DeleteLikeAsync(item_id).Result;
+        }
+
+        /// <summary>
+        /// 非同期でいいねを取り消します
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>取り消しの成否</returns>
+        public async Task<bool> DeleteLikeAsync(string item_id)
+        {
+            var message = await Tokens.client.DeleteAsync($"api/v2/items/{item_id}/like");
+            return (int)message.StatusCode == 204;
+        }
+
+        /// <summary>
+        /// いいねを付けます
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねの成否</returns>
+        public bool Like(string item_id)
+        {
+            return LikeAsync(item_id).Result;
+        }
+
+        /// <summary>
+        /// 非同期でいいねを付けます
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねの成否</returns>
+        public async Task<bool> LikeAsync(string item_id)
+        {
+            var message = await Tokens.client.PutAsync($"api/v2/items/{item_id}/like", new StringContent(""));
+            return (int)message.StatusCode == 204;
+        }
+
+        /// <summary>
+        /// いいねを付けているか調べます
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねの成否</returns>
+        public bool IsLike(string item_id)
+        {
+            return IsLikeAsync(item_id).Result;
+        }
+
+        /// <summary>
+        /// いいねを付けているか非同期で調べます
+        /// </summary>
+        /// <param name="item_id">記事ID</param>
+        /// <returns>いいねの成否</returns>
+        public async Task<bool> IsLikeAsync(string item_id)
+        {
+            var message = await Tokens.client.GetAsync($"api/v2/items/{item_id}/like");
+            return (int)message.StatusCode == 204;
+        }
     }
 
     [JsonObject]

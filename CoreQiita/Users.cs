@@ -292,16 +292,16 @@ namespace CoreQiita
         /// フォロー状態か取得します
         /// </summary>
         /// <returns>True:フォロー中 False:未フォロー</returns>
-        public bool isFollowing()
+        public bool IsFollowing()
         {
-            return isFollowingAsync().Result;
+            return IsFollowingAsync().Result;
         }
 
         /// <summary>
         /// フォロー状態か非同期取得します
         /// </summary>
         /// <returns>True:フォロー中 False:未フォロー</returns>
-        public async Task<bool> isFollowingAsync()
+        public async Task<bool> IsFollowingAsync()
         {
             var message = await Tokens.client.GetAsync($"api/v2/users/{Id}/following");
             if ((int)message.StatusCode == 204) return true;
