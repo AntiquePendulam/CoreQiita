@@ -16,7 +16,7 @@ namespace CoreQiita
         private string USER_ID { get; set; }
         private AuthUserJson AuthUser { get; set; }
 
-        #region GetUser by user_id
+        #region GetUser
         /// <summary>
         /// ユーザーを取得します
         /// </summary>
@@ -34,10 +34,15 @@ namespace CoreQiita
         /// <returns>ユーザ情報</returns>
         public async Task<UserJson> GetUserAsync(string user_id)
         {
-            var url = $"api/v2/users/{user_id}";
-            return await GetUserAsync<UserJson>(url);
+            var message = await Tokens.client.GetAsync($"api/v2/users/{user_id}");
+            var response = await message.Content.ReadAsStringAsync();
+            var Result = JsonConvert.DeserializeObject<UserJson>(response);
+            return Result;
         }
         #endregion
+
+
+        #region UserJson[]
 
         #region GetAllUsers
         /// <summary>
@@ -60,7 +65,7 @@ namespace CoreQiita
         public async Task<UserJson[]> GetAllUsersAsync(int page = 1,int per_page = 5)
         {
             var url = $"api/v2/users?page={page}&per_page{per_page}";
-            return await GetUserAsync<UserJson[]>(url);
+            return await GetUsersAsync(url);
         }
         #endregion
 
@@ -87,11 +92,21 @@ namespace CoreQiita
         public async Task<UserJson[]> GetStockerAsync(string item_id, int page = 1, int per_page = 5)
         {
             var url = $"api/v2/items/{item_id}/stockers?page={page}&per_page={per_page}";
-            return await GetUserAsync<UserJson[]>(url);
+            return await GetUsersAsync(url);
         }
         #endregion
 
-        #region Get Auth User
+        private async Task<UserJson[]> GetUsersAsync(string url)
+        {
+            var message = await Tokens.client.GetAsync(url);
+            var response = await message.Content.ReadAsStringAsync();
+            var Result = JsonConvert.DeserializeObject<UserJson[]>(response);
+            return Result;
+        }
+        #endregion
+
+
+        #region GetAuthUser
         /// <summary>
         /// 認証中のユーザを取得します
         /// </summary>
@@ -109,20 +124,13 @@ namespace CoreQiita
         public async Task<AuthUserJson> GetAuthUserAsync()
         {
             if (AuthUser != null) return AuthUser;
-            var url = $"api/v2/authenticated_user";
-
-            return await GetUserAsync<AuthUserJson>(url);
-        }
-        #endregion
-
-        //何回も回す可能性がある箇所でジェネリクスはやはりやめたほうが良いのだろうか...
-        private async Task<Type> GetUserAsync<Type>(string url)
-        {
-            var message = await Tokens.client.GetAsync(url);
+            var message = await Tokens.client.GetAsync($"api/v2/authenticated_user");
             var response = await message.Content.ReadAsStringAsync();
-            var Result = JsonConvert.DeserializeObject<Type>(response);
+            var Result = JsonConvert.DeserializeObject<AuthUserJson>(response);
             return Result;
         }
+
+        #endregion
     }
     
     /// <summary>

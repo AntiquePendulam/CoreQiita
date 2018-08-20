@@ -13,6 +13,8 @@ namespace CoreQiita
     /// </summary>
     public class Tags
     {
+        private readonly StringContent none = new StringContent("");
+
         /// <summary>
         ///　一覧からタグデータを取得します
         /// </summary>
@@ -110,9 +112,54 @@ namespace CoreQiita
         public async Task<bool> FollowAsync(string tag_id)
         {
             if (tag_id.IndexOf("#") != -1) tag_id = tag_id.Replace("#", "sharp");
-            var message = await Tokens.client.PostAsync("api/v2/tags/:tag_id/following", new StringContent(""));
+            var message = await Tokens.client.PutAsync($"api/v2/tags/{tag_id}/following", none);
             return (int)message.StatusCode == 204;
         }
+
+        /// <summary>
+        /// フォローを解除します
+        /// </summary>
+        /// <param name="tag_id">タグID</param>
+        /// <returns></returns>
+        public bool UnFollow(string tag_id)
+        {
+            return UnFollowAsync(tag_id).Result;
+        }
+
+        /// <summary>
+        /// 非同期でフォローを解除します
+        /// </summary>
+        /// <param name="tag_id">タグID</param>
+        /// <returns></returns>
+        public async Task<bool> UnFollowAsync(string tag_id)
+        {
+            if (tag_id.IndexOf("#") != -1) tag_id = tag_id.Replace("#", "sharp");
+            var message = await Tokens.client.DeleteAsync($"api/v2/tags/{tag_id}/following");
+            return (int)message.StatusCode == 204;
+        }
+
+        /// <summary>
+        /// タグをフォローしているか取得します
+        /// </summary>
+        /// <param name="tag_id">タグID</param>
+        /// <returns>フォロー中:True</returns>
+        public bool IsFollow(string tag_id)
+        {
+            return IsFollowAsync(tag_id).Result;
+        }
+
+        /// <summary>
+        /// タグをフォローしているか非同期で取得します
+        /// </summary>
+        /// <param name="tag_id">タグID</param>
+        /// <returns>フォロー中:True</returns>
+        public async Task<bool> IsFollowAsync(string tag_id)
+        {
+            if (tag_id.IndexOf("#") != -1) tag_id = tag_id.Replace("#", "sharp");
+            var message = await Tokens.client.GetAsync($"api/v2/tags/{tag_id}/following");
+            return (int)message.StatusCode == 204;
+        }
+
     }
     /// <summary>
     /// 記事タグ
