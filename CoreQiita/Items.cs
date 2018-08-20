@@ -135,9 +135,9 @@ namespace CoreQiita
         /// <param name="isprivate">限定共有記事か公開記事か</param>
         /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
         /// <returns>投稿の成否</returns>
-        public bool Create(string title, Tags tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
+        public bool Create(string title, Tag tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
-            var t = new Tags[] { tags };
+            var t = new Tag[] { tags };
             return Create(title, t, body, gist, isprivate, tweet);
         }
 
@@ -151,7 +151,7 @@ namespace CoreQiita
         /// <param name="isprivate">限定共有記事か公開記事か</param>
         /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
         /// <returns>投稿の成否</returns>
-        public bool Create(string title, Tags[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
+        public bool Create(string title, Tag[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             return CreateAsync(title, tags, body, gist, isprivate, tweet).Result;
         }
@@ -166,9 +166,9 @@ namespace CoreQiita
         /// <param name="isprivate">限定共有記事か公開記事か</param>
         /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
         /// <returns>投稿の成否</returns>
-        public async Task<bool> CreateAsync(string title, Tags tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
+        public async Task<bool> CreateAsync(string title, Tag tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
-            var t = new Tags[] { tags };
+            var t = new Tag[] { tags };
             return await CreateAsync(title, t, body, gist, isprivate, tweet);
         }
 
@@ -182,7 +182,7 @@ namespace CoreQiita
         /// <param name="isprivate">限定共有記事か公開記事か</param>
         /// <param name="tweet">ツイッターに投稿するか(Twitterとの連携が必要)</param>
         /// <returns>投稿の成否</returns>
-        public async Task<bool> CreateAsync(string title, Tags[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
+        public async Task<bool> CreateAsync(string title, Tag[] tags, string body, bool gist = false, bool isprivate = false, bool tweet = false)
         {
             var data = new PostItemData()
             {
@@ -253,7 +253,7 @@ namespace CoreQiita
         /// <param name="body">本文</param>
         /// <param name="isprivate">限定共有にするか</param>
         /// <returns></returns>
-        public bool PatchItem(string item_id, string title, Tags[] tags, string body, bool isprivate = false)
+        public bool PatchItem(string item_id, string title, Tag[] tags, string body, bool isprivate = false)
         {
             return PatchItemAsync(item_id, title, tags, body, isprivate).Result;
         }
@@ -269,7 +269,7 @@ namespace CoreQiita
         /// <param name="body">本文</param>
         /// <param name="isprivate">限定共有にするか</param>
         /// <returns></returns>
-        public async Task<bool> PatchItemAsync(string item_id, string title, Tags[] tags, string body, bool isprivate = false)
+        public async Task<bool> PatchItemAsync(string item_id, string title, Tag[] tags, string body, bool isprivate = false)
         {
             var jsondata = new PatchItemData()
             {
@@ -364,7 +364,7 @@ namespace CoreQiita
         internal bool Private { get; set; }
 
         [JsonProperty("tags")]
-        internal Tags[] Tags { get; set; }
+        internal Tag[] Tags { get; set; }
 
         [JsonProperty("title")]
         internal string Title { get; set; }
@@ -383,7 +383,7 @@ namespace CoreQiita
         internal bool Private { get; set; }
 
         [JsonProperty("tags")]
-        internal Tags[] Tags { get; set; }
+        internal Tag[] Tags { get; set; }
 
         [JsonProperty("title")]
         internal string Title { get; set; }
@@ -400,19 +400,19 @@ namespace CoreQiita
         /// HTML形式の本文
         /// </summary>
         [JsonProperty("rendered_body")]
-        public string RenderedBody { get; set; }
+        public string RenderedBody { get;internal set; }
 
         /// <summary>
         /// Markdown形式の本文
         /// </summary>
         [JsonProperty("body")]
-        public string Body { get; set; }
+        public string Body { get; internal set; }
 
         /// <summary>
         /// コメント数
         /// </summary>
         [JsonProperty("comments_count")]
-        public int CommentsCount { get; set; }
+        public int CommentsCount { get; internal set; }
 
         [JsonProperty("created_at")]
         internal string _Date { get; set; }
@@ -436,37 +436,37 @@ namespace CoreQiita
         /// Qiita:Teamグループ
         /// </summary>
         [JsonProperty("group")]
-        public Group Group { get; set; }
+        public Group Group { get; internal set; }
 
         /// <summary>
         /// 記事ID
         /// </summary>
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; internal set; }
 
         /// <summary>
         /// いいねの数
         /// </summary>
         [JsonProperty("likes_count")]
-        public int LikesCount { get; set; }
+        public int LikesCount { get; internal set; }
 
         /// <summary>
         /// 限定共有状態か
         /// </summary>
         [JsonProperty("private")]
-        public bool isPrivate { get; set; }
+        public bool isPrivate { get; internal set; }
 
         /// <summary>
         /// 記事につけられたタグ
         /// </summary>
         [JsonProperty("tags")]
-        public Tags[] Tags { get; set; }
+        public Tag[] Tags { get; internal set; }
 
         /// <summary>
         /// 記事タイトル
         /// </summary>
         [JsonProperty("title")]
-        public string Title { get; set; }
+        public string Title { get; internal set; }
 
 
         [JsonProperty("updated_at")]
@@ -491,19 +491,19 @@ namespace CoreQiita
         /// 記事のURL
         /// </summary>
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public string Url { get; internal set; }
 
         /// <summary>
         /// 投稿ユーザ
         /// </summary>
         [JsonProperty("user")]
-        public UserJson User { get; set; }
+        public UserJson User { get; internal set; }
 
         /// <summary>
         /// 閲覧数
         /// </summary>
         [JsonProperty("page_views_count")]
-        public int? Views { get; set; }
+        public int? Views { get; internal set; }
         #endregion
 
         /// <summary>
@@ -590,6 +590,7 @@ namespace CoreQiita
         [JsonProperty("user")]
         public UserJson User { get; internal set; }
     }
+
     /// <summary>
     /// Qiita:Teamのグループデータ
     /// </summary>
@@ -618,19 +619,19 @@ namespace CoreQiita
         /// グループID
         /// </summary>
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public int Id { get; internal set; }
 
         /// <summary>
         /// グループの名前
         /// </summary>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         /// 非公開グループかどうか
         /// </summary>
         [JsonProperty("private")]
-        public bool isPrivate { get; set; }
+        public bool isPrivate { get; internal set; }
 
         [JsonProperty("updated_at")]
         internal string _UpdateDate { get; set; }
@@ -654,39 +655,6 @@ namespace CoreQiita
         /// グループのチーム上での一意な名前
         /// </summary>
         [JsonProperty("url_name")]
-        public string UrlName { get; set; }
-    }
-
-    /// <summary>
-    /// 記事タグ
-    /// </summary>
-    [JsonObject]
-    public class Tags
-    {
-        /// <summary>
-        /// タグ名
-        /// </summary>
-        [JsonProperty("name")]
-        public string Name { get;private set; }
-
-        /// <summary>
-        /// タグを作成します
-        /// </summary>
-        /// <param name="name">タグ名</param>
-        public Tags(string name)
-        {
-            this.Name = name;
-        }
-
-        /// <summary>
-        /// 文字列配列から複数のタグを作成します
-        /// </summary>
-        /// <param name="tag">タグ(可変長)</param>
-        /// <returns>タグ配列</returns>
-        public static Tags[] BuildTags(params string[] tag)
-        {
-            var tags = tag.Select(value => new Tags(value)).ToArray();
-            return tags;
-        }
+        public string UrlName { get; internal set; }
     }
 }

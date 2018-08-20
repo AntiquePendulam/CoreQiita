@@ -115,6 +115,7 @@ namespace CoreQiita
         }
         #endregion
 
+        //何回も回す可能性がある箇所でジェネリクスはやはりやめたほうが良いのだろうか...
         private async Task<Type> GetUserAsync<Type>(string url)
         {
             var message = await Tokens.client.GetAsync(url);

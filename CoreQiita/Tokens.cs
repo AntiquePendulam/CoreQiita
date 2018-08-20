@@ -17,16 +17,21 @@ namespace CoreQiita
         /// 認証中のアクセストークン
         /// </summary>
         public string Token { get; private set; }
-        
+
         /// <summary>
         /// ユーザーの操作
         /// </summary>
-        public Users Users { get;private set; }
+        public Users Users { get; } = new Users();
 
         /// <summary>
         /// 投稿記事の操作
         /// </summary>
-        public Items Items { get;private set; }
+        public Items Items { get; } = new Items();
+
+        /// <summary>
+        /// タグに関する操作
+        /// </summary>
+        public Tags Tags { get; } = new Tags();
 
         internal static HttpClient client = new HttpClient() {BaseAddress = new Uri(Url.BASE_URL) };
 
@@ -38,10 +43,6 @@ namespace CoreQiita
         {
             this.Token = token;
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-
-            Users = new Users();
-            Items = new Items();
-            
         }
 
         /// <summary>

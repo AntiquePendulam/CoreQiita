@@ -100,3 +100,11 @@ namespace CoreQiita
         internal string Token { get; set; }
     }
 }
+
+/*
+********************************************************
+    Copyright (c) 2018 AntiqueR
+    Released under the MIT license
+    https://opensource.org/licenses/mit-license.php
+*******************************************************
+*/
