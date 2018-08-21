@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoreQiita
 {
-    internal class ContentType
+    class Url
     {
-        internal const string Json = "application/json";
-        internal const string Html = "text/html";
+        internal const string BASE_URL = "https://qiita.com/";
+        internal const string AuthTokenURL = @"api/v2/access_tokens";
     }
 }
