@@ -60,6 +60,24 @@ namespace CoreQiita
             return Token;
         }
 
+        /// <summary>
+        /// アクセストークンを非同期で取得します
+        /// </summary>
+        /// <param name="code">ユーザ認証後のコード</param>
+        /// <returns>トークン</returns>
+        public async Task<Tokens> GetTokenAsync(string code)
+        {
+            var tokenJson = new PostJson(ClientID, ClientSecret, code);
+            var json = JsonConvert.SerializeObject(tokenJson);
+            var content = new StringContent(json, Encoding.UTF8, ContentType.Json);
+
+            var getResponse = await JsonPost(content);
+
+            Token = new Tokens(getResponse);
+
+            return Token;
+        }
+
         private static async Task<string> JsonPost(StringContent content)
         {
             string data;
